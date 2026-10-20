@@ -104,7 +104,6 @@ class ForwardMsg(_message.Message):
     REF_HASH_FIELD_NUMBER: _builtins.int
     HEARTBEAT_ACK_FIELD_NUMBER: _builtins.int
     BACKEND_OPERATION_RESPONSE_FIELD_NUMBER: _builtins.int
-    DEBUG_LAST_BACKMSG_ID_FIELD_NUMBER: _builtins.int
     hash: _builtins.str
     """A hash that uniquely identifies this ForwardMsg, for caching."""
     script_finished: Global___ForwardMsg.ScriptFinishedStatus.ValueType
@@ -118,11 +117,6 @@ class ForwardMsg(_message.Message):
     monitoring. When the frontend sends an app_heartbeat, the server
     responds with this ack so the frontend can verify the connection is
     healthy.
-    """
-    debug_last_backmsg_id: _builtins.str
-    """The ID of the last BackMsg that we received before sending this
-    ForwardMsg. As its name suggests, this field should only be used for
-    testing.
     """
     @_builtins.property
     def metadata(self) -> Global___ForwardMsgMetadata:
@@ -205,11 +199,10 @@ class ForwardMsg(_message.Message):
         ref_hash: _builtins.str = ...,
         heartbeat_ack: _builtins.bool = ...,
         backend_operation_response: Global___BackendOperationResponse | None = ...,
-        debug_last_backmsg_id: _builtins.str = ...,
     ) -> None: ...
     _HasFieldArgType: _TypeAlias = _typing.Literal["auth_redirect", b"auth_redirect", "auto_rerun", b"auto_rerun", "backend_operation_response", b"backend_operation_response", "delta", b"delta", "file_urls_response", b"file_urls_response", "git_info_changed", b"git_info_changed", "heartbeat_ack", b"heartbeat_ack", "logo", b"logo", "metadata", b"metadata", "navigation", b"navigation", "new_session", b"new_session", "page_config_changed", b"page_config_changed", "page_info_changed", b"page_info_changed", "page_not_found", b"page_not_found", "page_profile", b"page_profile", "parent_message", b"parent_message", "ref_hash", b"ref_hash", "script_finished", b"script_finished", "session_event", b"session_event", "session_status_changed", b"session_status_changed", "stop_auto_rerun", b"stop_auto_rerun", "type", b"type"]  # noqa: Y015
     def HasField(self, field_name: _HasFieldArgType) -> _builtins.bool: ...
-    _ClearFieldArgType: _TypeAlias = _typing.Literal["auth_redirect", b"auth_redirect", "auto_rerun", b"auto_rerun", "backend_operation_response", b"backend_operation_response", "debug_last_backmsg_id", b"debug_last_backmsg_id", "delta", b"delta", "file_urls_response", b"file_urls_response", "git_info_changed", b"git_info_changed", "hash", b"hash", "heartbeat_ack", b"heartbeat_ack", "logo", b"logo", "metadata", b"metadata", "navigation", b"navigation", "new_session", b"new_session", "page_config_changed", b"page_config_changed", "page_info_changed", b"page_info_changed", "page_not_found", b"page_not_found", "page_profile", b"page_profile", "parent_message", b"parent_message", "ref_hash", b"ref_hash", "script_finished", b"script_finished", "session_event", b"session_event", "session_status_changed", b"session_status_changed", "stop_auto_rerun", b"stop_auto_rerun", "type", b"type"]  # noqa: Y015
+    _ClearFieldArgType: _TypeAlias = _typing.Literal["auth_redirect", b"auth_redirect", "auto_rerun", b"auto_rerun", "backend_operation_response", b"backend_operation_response", "delta", b"delta", "file_urls_response", b"file_urls_response", "git_info_changed", b"git_info_changed", "hash", b"hash", "heartbeat_ack", b"heartbeat_ack", "logo", b"logo", "metadata", b"metadata", "navigation", b"navigation", "new_session", b"new_session", "page_config_changed", b"page_config_changed", "page_info_changed", b"page_info_changed", "page_not_found", b"page_not_found", "page_profile", b"page_profile", "parent_message", b"parent_message", "ref_hash", b"ref_hash", "script_finished", b"script_finished", "session_event", b"session_event", "session_status_changed", b"session_status_changed", "stop_auto_rerun", b"stop_auto_rerun", "type", b"type"]  # noqa: Y015
     def ClearField(self, field_name: _ClearFieldArgType) -> None: ...
     _WhichOneofReturnType_type: _TypeAlias = _typing.Literal["new_session", "delta", "page_info_changed", "page_config_changed", "script_finished", "git_info_changed", "page_profile", "session_status_changed", "session_event", "navigation", "page_not_found", "file_urls_response", "auto_rerun", "stop_auto_rerun", "logo", "auth_redirect", "parent_message", "ref_hash", "heartbeat_ack", "backend_operation_response"]  # noqa: Y015
     _WhichOneofArgType_type: _TypeAlias = _typing.Literal["type", b"type"]  # noqa: Y015

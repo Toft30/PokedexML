@@ -43,6 +43,7 @@ class Pagination(_message.Message):
     VALUE_FIELD_NUMBER: _builtins.int
     SET_VALUE_FIELD_NUMBER: _builtins.int
     QUERY_PARAM_KEY_FIELD_NUMBER: _builtins.int
+    IGNORE_RERUN_FIELD_NUMBER: _builtins.int
     id: _builtins.str
     num_pages: _builtins.int
     default: _builtins.int
@@ -52,7 +53,13 @@ class Pagination(_message.Message):
     value: _builtins.int
     set_value: _builtins.bool
     query_param_key: _builtins.str
-    """next id: 10"""
+    ignore_rerun: _builtins.bool
+    """Set by on_change="ignore": do not schedule a rerun; buffer the value until
+    the next rerun. Bound widgets still update the URL when the value is
+    committed. Inside a form, this flag has no effect because the form batches
+    values until submit.
+    next id: 11
+    """
     def __init__(
         self,
         *,
@@ -65,10 +72,11 @@ class Pagination(_message.Message):
         value: _builtins.int = ...,
         set_value: _builtins.bool = ...,
         query_param_key: _builtins.str | None = ...,
+        ignore_rerun: _builtins.bool = ...,
     ) -> None: ...
     _HasFieldArgType: _TypeAlias = _typing.Literal["_max_visible_pages", b"_max_visible_pages", "_query_param_key", b"_query_param_key", "max_visible_pages", b"max_visible_pages", "query_param_key", b"query_param_key"]  # noqa: Y015
     def HasField(self, field_name: _HasFieldArgType) -> _builtins.bool: ...
-    _ClearFieldArgType: _TypeAlias = _typing.Literal["_max_visible_pages", b"_max_visible_pages", "_query_param_key", b"_query_param_key", "default", b"default", "disabled", b"disabled", "form_id", b"form_id", "id", b"id", "max_visible_pages", b"max_visible_pages", "num_pages", b"num_pages", "query_param_key", b"query_param_key", "set_value", b"set_value", "value", b"value"]  # noqa: Y015
+    _ClearFieldArgType: _TypeAlias = _typing.Literal["_max_visible_pages", b"_max_visible_pages", "_query_param_key", b"_query_param_key", "default", b"default", "disabled", b"disabled", "form_id", b"form_id", "id", b"id", "ignore_rerun", b"ignore_rerun", "max_visible_pages", b"max_visible_pages", "num_pages", b"num_pages", "query_param_key", b"query_param_key", "set_value", b"set_value", "value", b"value"]  # noqa: Y015
     def ClearField(self, field_name: _ClearFieldArgType) -> None: ...
     _WhichOneofReturnType__max_visible_pages: _TypeAlias = _typing.Literal["max_visible_pages"]  # noqa: Y015
     _WhichOneofArgType__max_visible_pages: _TypeAlias = _typing.Literal["_max_visible_pages", b"_max_visible_pages"]  # noqa: Y015

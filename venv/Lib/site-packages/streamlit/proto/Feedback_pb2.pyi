@@ -57,6 +57,7 @@ class Feedback(_message.Message):
     FORM_ID_FIELD_NUMBER: _builtins.int
     VALUE_FIELD_NUMBER: _builtins.int
     SET_VALUE_FIELD_NUMBER: _builtins.int
+    IGNORE_RERUN_FIELD_NUMBER: _builtins.int
     id: _builtins.str
     type: Global___Feedback.FeedbackType.ValueType
     default: _builtins.int
@@ -66,6 +67,11 @@ class Feedback(_message.Message):
     value: _builtins.int
     """Value passed by the backend (selection index)"""
     set_value: _builtins.bool
+    ignore_rerun: _builtins.bool
+    """Set by on_change="ignore": do not schedule a rerun; buffer the value until
+    the next rerun. Inside a form, this flag has no effect because the form
+    batches values until submit.
+    """
     def __init__(
         self,
         *,
@@ -76,10 +82,11 @@ class Feedback(_message.Message):
         form_id: _builtins.str = ...,
         value: _builtins.int | None = ...,
         set_value: _builtins.bool = ...,
+        ignore_rerun: _builtins.bool = ...,
     ) -> None: ...
     _HasFieldArgType: _TypeAlias = _typing.Literal["_default", b"_default", "_value", b"_value", "default", b"default", "value", b"value"]  # noqa: Y015
     def HasField(self, field_name: _HasFieldArgType) -> _builtins.bool: ...
-    _ClearFieldArgType: _TypeAlias = _typing.Literal["_default", b"_default", "_value", b"_value", "default", b"default", "disabled", b"disabled", "form_id", b"form_id", "id", b"id", "set_value", b"set_value", "type", b"type", "value", b"value"]  # noqa: Y015
+    _ClearFieldArgType: _TypeAlias = _typing.Literal["_default", b"_default", "_value", b"_value", "default", b"default", "disabled", b"disabled", "form_id", b"form_id", "id", b"id", "ignore_rerun", b"ignore_rerun", "set_value", b"set_value", "type", b"type", "value", b"value"]  # noqa: Y015
     def ClearField(self, field_name: _ClearFieldArgType) -> None: ...
     _WhichOneofReturnType__default: _TypeAlias = _typing.Literal["default"]  # noqa: Y015
     _WhichOneofArgType__default: _TypeAlias = _typing.Literal["_default", b"_default"]  # noqa: Y015

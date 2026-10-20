@@ -42,12 +42,19 @@ class AudioInput(_message.Message):
     DISABLED_FIELD_NUMBER: _builtins.int
     LABEL_VISIBILITY_FIELD_NUMBER: _builtins.int
     SAMPLE_RATE_FIELD_NUMBER: _builtins.int
+    IGNORE_RERUN_FIELD_NUMBER: _builtins.int
     id: _builtins.str
     label: _builtins.str
     help: _builtins.str
     form_id: _builtins.str
     disabled: _builtins.bool
     sample_rate: _builtins.int
+    ignore_rerun: _builtins.bool
+    """Set by on_change="ignore": do not schedule a rerun; buffer the value until
+    the next rerun. Inside a form, this flag has no effect because the form
+    batches values until submit.
+    Next: 9
+    """
     @_builtins.property
     def label_visibility(self) -> _LabelVisibility_pb2.LabelVisibility: ...
     def __init__(
@@ -60,10 +67,11 @@ class AudioInput(_message.Message):
         disabled: _builtins.bool = ...,
         label_visibility: _LabelVisibility_pb2.LabelVisibility | None = ...,
         sample_rate: _builtins.int | None = ...,
+        ignore_rerun: _builtins.bool = ...,
     ) -> None: ...
     _HasFieldArgType: _TypeAlias = _typing.Literal["_sample_rate", b"_sample_rate", "label_visibility", b"label_visibility", "sample_rate", b"sample_rate"]  # noqa: Y015
     def HasField(self, field_name: _HasFieldArgType) -> _builtins.bool: ...
-    _ClearFieldArgType: _TypeAlias = _typing.Literal["_sample_rate", b"_sample_rate", "disabled", b"disabled", "form_id", b"form_id", "help", b"help", "id", b"id", "label", b"label", "label_visibility", b"label_visibility", "sample_rate", b"sample_rate"]  # noqa: Y015
+    _ClearFieldArgType: _TypeAlias = _typing.Literal["_sample_rate", b"_sample_rate", "disabled", b"disabled", "form_id", b"form_id", "help", b"help", "id", b"id", "ignore_rerun", b"ignore_rerun", "label", b"label", "label_visibility", b"label_visibility", "sample_rate", b"sample_rate"]  # noqa: Y015
     def ClearField(self, field_name: _ClearFieldArgType) -> None: ...
     _WhichOneofReturnType__sample_rate: _TypeAlias = _typing.Literal["sample_rate"]  # noqa: Y015
     _WhichOneofArgType__sample_rate: _TypeAlias = _typing.Literal["_sample_rate", b"_sample_rate"]  # noqa: Y015

@@ -1022,6 +1022,7 @@ def test_parquet_scan_options():
     cache_opts = pa.CacheOptions(
         hole_size_limit=2**10, range_size_limit=8*2**10, lazy=True)
     opts7 = ds.ParquetFragmentScanOptions(pre_buffer=True, cache_options=cache_opts)
+    opts8 = ds.ParquetFragmentScanOptions(schema_depth_limit=42)
 
     assert opts1.use_buffered_stream is False
     assert opts1.buffer_size == 2**13
@@ -1030,6 +1031,7 @@ def test_parquet_scan_options():
     assert opts1.thrift_string_size_limit == 100_000_000  # default in C++
     assert opts1.thrift_container_size_limit == 1_000_000  # default in C++
     assert opts1.page_checksum_verification is False
+    assert opts1.schema_depth_limit == 100  # default in C++
 
     assert opts2.use_buffered_stream is False
     assert opts2.buffer_size == 2**12
@@ -1056,6 +1058,8 @@ def test_parquet_scan_options():
     assert opts7.cache_options == cache_opts
     assert opts7.cache_options != opts1.cache_options
 
+    assert opts8.schema_depth_limit == 42
+
     assert opts1 == opts1
     assert opts1 != opts2
     assert opts2 != opts3
@@ -1063,6 +1067,7 @@ def test_parquet_scan_options():
     assert opts5 != opts1
     assert opts6 != opts1
     assert opts7 != opts1
+    assert opts8 != opts1
 
 
 def test_file_format_pickling(pickle_module):
@@ -1097,6 +1102,7 @@ def test_file_format_pickling(pickle_module):
                 buffer_size=4096,
                 thrift_string_size_limit=123,
                 thrift_container_size_limit=456,
+                schema_depth_limit=42,
             ),
         ])
 
@@ -4984,6 +4990,47 @@ def test_write_dataset_csv(tempdir):
     assert result.equals(table)
 
 
+def test_csv_make_write_options_uses_parse_delimiter():
+    # CsvFileFormat.make_write_options propagates the parse delimiter
+    # to write options when no explicit delimiter is given
+    csv_format = ds.CsvFileFormat(pa.csv.ParseOptions(delimiter="|"))
+    write_opts = csv_format.make_write_options()
+    assert write_opts.write_options.delimiter == "|"
+
+    # delimiter=None is treated as "unspecified" and the propagated
+    # value is preserved (matches WriteOptions(**kwargs) semantics)
+    write_opts = csv_format.make_write_options(delimiter=None)
+    assert write_opts.write_options.delimiter == "|"
+
+    # An explicitly passed delimiter takes precedence
+    csv_format = ds.CsvFileFormat(pa.csv.ParseOptions(delimiter=">"))
+    write_opts = csv_format.make_write_options(delimiter="|")
+    assert write_opts.write_options.delimiter == "|"
+
+    # The default delimiter is still "," when no parse options are given
+    csv_format = ds.CsvFileFormat()
+    write_opts = csv_format.make_write_options()
+    assert write_opts.write_options.delimiter == ","
+
+
+def test_write_dataset_uses_csv_parse_delimiter(tempdir):
+    table = pa.table({
+        "B": ["B1", "B2"],
+        "C": ["C1", "C2"],
+    })
+
+    csv_format = ds.CsvFileFormat(pa.csv.ParseOptions(delimiter=">"))
+    ds.write_dataset(table, tempdir, format=csv_format)
+
+    with open(tempdir / "part-0.csv") as fh:
+        content = fh.read()
+    assert content == '"B">"C"\n"B1">"C1"\n"B2">"C2"\n'
+
+    # Roundtrip: reading back with the same delimiter recovers the table
+    result = ds.dataset(tempdir, format=csv_format).to_table()
+    assert result.equals(table)
+
+
 @pytest.mark.parquet
 def test_write_dataset_parquet_file_visitor(tempdir):
     table = pa.table([
@@ -5887,6 +5934,19 @@ def test_checksum_write_dataset_read_dataset_to_table(tempdir):
             corrupted_dir_path,
             format=pq_read_format_crc
         ).to_table()
+
+
+@pytest.mark.parquet
+@pytest.mark.parametrize("cdc", [
+    True,
+    {"min_chunk_size": 32 * 1024, "max_chunk_size": 64 * 1024},
+])
+def test_write_dataset_content_defined_chunking(tempdir, cdc):
+    expected_table = pa.table({'a': [1, 2, 3]})
+    fmt = ds.ParquetFileFormat()
+    opts = fmt.make_write_options(use_content_defined_chunking=cdc)
+    ds.write_dataset(expected_table, tempdir, format=fmt, file_options=opts)
+    assert ds.dataset(tempdir, format=fmt).to_table().equals(expected_table)
 
 
 def test_make_write_options_error():

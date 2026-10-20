@@ -1,17 +1,56 @@
+
 import streamlit as st
 import pandas as pd
 import joblib
 
 st.set_page_config(
-    page_title="Pokedex Type predikator",
-    page_icon="🔴",
-    layout= "centered"
+    page_title="Pokédex AI",
+    page_icon="⚡",
+    layout="centered"
 )
-
-st.title("🔴 Pokedec ML - Kva e typen?")
-st.write("Juster stats til pokemon under, og la modellen tippe kva type dette er")
 
 @st.cache_resource
 def load_model():
-    return joblib.load('pokemin_model.pkl')
+    return joblib.load("pokemon_model.pkl")
 
+model = load_model()
+
+st.title("⚡ Pokédex AI")
+st.write("Predict a Pokémon's primary type using its stats.")
+
+st.subheader("Pokémon stats")
+
+hp = st.slider("HP", 1, 255, 60)
+attack = st.slider("Attack", 1, 255, 70)
+defense = st.slider("Defense", 1, 255, 60)
+sp_atk = st.slider("Special Attack", 1, 255, 65)
+sp_def = st.slider("Special Defense", 1, 255, 65)
+speed = st.slider("Speed", 1, 255, 60)
+
+if st.button("Predict Pokémon Type", type="primary"):
+    pokemon = pd.DataFrame([{
+        "HP": hp,
+        "Attack": attack,
+        "Defense": defense,
+        "Sp. Atk": sp_atk,
+        "Sp. Def": sp_def,
+        "Speed": speed
+    }])
+
+    prediction = model.predict(pokemon)[0]
+    probabilities = model.predict_proba(pokemon)[0]
+
+    st.success(f"Predicted type: {prediction}")
+
+    results = pd.DataFrame({
+        "Type": model.classes_,
+        "Probability": probabilities
+    }).sort_values("Probability", ascending=False)
+
+    st.subheader("Top 3 predicted types")
+
+    for _, result in results.head(3).iterrows():
+        st.write(
+            f'{result["Type"]}: '
+            f'{result["Probability"]:.1%}'
+        )

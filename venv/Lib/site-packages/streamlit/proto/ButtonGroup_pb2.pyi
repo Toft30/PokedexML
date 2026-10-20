@@ -102,6 +102,7 @@ class ButtonGroup(_message.Message):
     QUERY_PARAM_KEY_FIELD_NUMBER: _builtins.int
     REQUIRED_FIELD_NUMBER: _builtins.int
     WRAP_FIELD_NUMBER: _builtins.int
+    IGNORE_RERUN_FIELD_NUMBER: _builtins.int
     id: _builtins.str
     disabled: _builtins.bool
     click_mode: Global___ButtonGroup.ClickMode.ValueType
@@ -120,6 +121,12 @@ class ButtonGroup(_message.Message):
     """If false, options stay on one row and the group scrolls horizontally.
     Absent means the frontend decides based on layout (no wrap in horizontal
     containers; wrap otherwise).
+    """
+    ignore_rerun: _builtins.bool
+    """Set by on_change="ignore": do not schedule a rerun; buffer the value until
+    the next rerun. Bound widgets still update the URL when the value is
+    committed. Inside a form, this flag has no effect because the form batches
+    values until submit.
     """
     @_builtins.property
     def options(self) -> _containers.RepeatedCompositeFieldContainer[Global___ButtonGroup.Option]: ...
@@ -153,10 +160,11 @@ class ButtonGroup(_message.Message):
         query_param_key: _builtins.str | None = ...,
         required: _builtins.bool = ...,
         wrap: _builtins.bool | None = ...,
+        ignore_rerun: _builtins.bool = ...,
     ) -> None: ...
     _HasFieldArgType: _TypeAlias = _typing.Literal["_help", b"_help", "_query_param_key", b"_query_param_key", "_wrap", b"_wrap", "help", b"help", "label_visibility", b"label_visibility", "query_param_key", b"query_param_key", "wrap", b"wrap"]  # noqa: Y015
     def HasField(self, field_name: _HasFieldArgType) -> _builtins.bool: ...
-    _ClearFieldArgType: _TypeAlias = _typing.Literal["_help", b"_help", "_query_param_key", b"_query_param_key", "_wrap", b"_wrap", "click_mode", b"click_mode", "default", b"default", "disabled", b"disabled", "form_id", b"form_id", "help", b"help", "id", b"id", "label", b"label", "label_visibility", b"label_visibility", "options", b"options", "query_param_key", b"query_param_key", "raw_values", b"raw_values", "required", b"required", "set_value", b"set_value", "style", b"style", "wrap", b"wrap"]  # noqa: Y015
+    _ClearFieldArgType: _TypeAlias = _typing.Literal["_help", b"_help", "_query_param_key", b"_query_param_key", "_wrap", b"_wrap", "click_mode", b"click_mode", "default", b"default", "disabled", b"disabled", "form_id", b"form_id", "help", b"help", "id", b"id", "ignore_rerun", b"ignore_rerun", "label", b"label", "label_visibility", b"label_visibility", "options", b"options", "query_param_key", b"query_param_key", "raw_values", b"raw_values", "required", b"required", "set_value", b"set_value", "style", b"style", "wrap", b"wrap"]  # noqa: Y015
     def ClearField(self, field_name: _ClearFieldArgType) -> None: ...
     _WhichOneofReturnType__help: _TypeAlias = _typing.Literal["help"]  # noqa: Y015
     _WhichOneofArgType__help: _TypeAlias = _typing.Literal["_help", b"_help"]  # noqa: Y015

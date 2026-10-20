@@ -49,7 +49,6 @@ class BackMsg(_message.Message):
     FILE_URLS_REQUEST_FIELD_NUMBER: _builtins.int
     APP_HEARTBEAT_FIELD_NUMBER: _builtins.int
     BACKEND_OPERATION_REQUEST_FIELD_NUMBER: _builtins.int
-    DEBUG_LAST_BACKMSG_ID_FIELD_NUMBER: _builtins.int
     clear_cache: _builtins.bool
     """Requests that the app's cached data and resources be cleared"""
     set_run_on_save: _builtins.bool
@@ -71,11 +70,6 @@ class BackMsg(_message.Message):
     """
     app_heartbeat: _builtins.bool
     """Sends an app heartbeat message through the websocket"""
-    debug_last_backmsg_id: _builtins.str
-    """An ID used to associate this BackMsg with the corresponding ForwardMsgs
-    that are sent to the client due to it. As its name suggests, this field
-    should only be used for testing.
-    """
     @_builtins.property
     def rerun_script(self) -> _ClientState_pb2.ClientState: ...
     @_builtins.property
@@ -103,11 +97,10 @@ class BackMsg(_message.Message):
         file_urls_request: _Common_pb2.FileURLsRequest | None = ...,
         app_heartbeat: _builtins.bool = ...,
         backend_operation_request: Global___BackendOperationRequest | None = ...,
-        debug_last_backmsg_id: _builtins.str = ...,
     ) -> None: ...
     _HasFieldArgType: _TypeAlias = _typing.Literal["app_heartbeat", b"app_heartbeat", "backend_operation_request", b"backend_operation_request", "clear_cache", b"clear_cache", "debug_disconnect_websocket", b"debug_disconnect_websocket", "debug_shutdown_runtime", b"debug_shutdown_runtime", "file_urls_request", b"file_urls_request", "load_git_info", b"load_git_info", "rerun_script", b"rerun_script", "set_run_on_save", b"set_run_on_save", "stop_script", b"stop_script", "type", b"type"]  # noqa: Y015
     def HasField(self, field_name: _HasFieldArgType) -> _builtins.bool: ...
-    _ClearFieldArgType: _TypeAlias = _typing.Literal["app_heartbeat", b"app_heartbeat", "backend_operation_request", b"backend_operation_request", "clear_cache", b"clear_cache", "debug_disconnect_websocket", b"debug_disconnect_websocket", "debug_last_backmsg_id", b"debug_last_backmsg_id", "debug_shutdown_runtime", b"debug_shutdown_runtime", "file_urls_request", b"file_urls_request", "load_git_info", b"load_git_info", "rerun_script", b"rerun_script", "set_run_on_save", b"set_run_on_save", "stop_script", b"stop_script", "type", b"type"]  # noqa: Y015
+    _ClearFieldArgType: _TypeAlias = _typing.Literal["app_heartbeat", b"app_heartbeat", "backend_operation_request", b"backend_operation_request", "clear_cache", b"clear_cache", "debug_disconnect_websocket", b"debug_disconnect_websocket", "debug_shutdown_runtime", b"debug_shutdown_runtime", "file_urls_request", b"file_urls_request", "load_git_info", b"load_git_info", "rerun_script", b"rerun_script", "set_run_on_save", b"set_run_on_save", "stop_script", b"stop_script", "type", b"type"]  # noqa: Y015
     def ClearField(self, field_name: _ClearFieldArgType) -> None: ...
     _WhichOneofReturnType_type: _TypeAlias = _typing.Literal["clear_cache", "set_run_on_save", "stop_script", "rerun_script", "load_git_info", "debug_disconnect_websocket", "debug_shutdown_runtime", "file_urls_request", "app_heartbeat", "backend_operation_request"]  # noqa: Y015
     _WhichOneofArgType_type: _TypeAlias = _typing.Literal["type", b"type"]  # noqa: Y015

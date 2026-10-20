@@ -145,6 +145,7 @@ class Dataframe(_message.Message):
     BUTTON_CLICK_WIDGETS_FIELD_NUMBER: _builtins.int
     LAZY_DATA_FIELD_NUMBER: _builtins.int
     ALT_FIELD_NUMBER: _builtins.int
+    IGNORE_RERUN_FIELD_NUMBER: _builtins.int
     id: _builtins.str
     """The id of the widget, this is required if the dataframe is editable"""
     columns: _builtins.str
@@ -172,6 +173,11 @@ class Dataframe(_message.Message):
     """Author-provided accessible name for the grid (st.dataframe / st.data_editor).
     Unset means the grid has no element-level name. Glide's canvas keeps its own
     cell-level accessibility tree regardless.
+    """
+    ignore_rerun: _builtins.bool
+    """Set by on_change="ignore": do not schedule a rerun; buffer the value until
+    the next rerun. Inside a form, this flag has no effect because the form
+    batches values until submit.
     """
     @_builtins.property
     def arrow_data(self) -> _ArrowData_pb2.ArrowData:
@@ -220,10 +226,11 @@ class Dataframe(_message.Message):
         button_click_widgets: _abc.Mapping[_builtins.str, _builtins.str] | None = ...,
         lazy_data: Global___LazyDataframe | None = ...,
         alt: _builtins.str | None = ...,
+        ignore_rerun: _builtins.bool = ...,
     ) -> None: ...
     _HasFieldArgType: _TypeAlias = _typing.Literal["_alt", b"_alt", "_lazy_data", b"_lazy_data", "_placeholder", b"_placeholder", "_row_height", b"_row_height", "_selection_default", b"_selection_default", "_selection_state", b"_selection_state", "alt", b"alt", "arrow_data", b"arrow_data", "lazy_data", b"lazy_data", "placeholder", b"placeholder", "row_height", b"row_height", "selection_default", b"selection_default", "selection_state", b"selection_state"]  # noqa: Y015
     def HasField(self, field_name: _HasFieldArgType) -> _builtins.bool: ...
-    _ClearFieldArgType: _TypeAlias = _typing.Literal["_alt", b"_alt", "_lazy_data", b"_lazy_data", "_placeholder", b"_placeholder", "_row_height", b"_row_height", "_selection_default", b"_selection_default", "_selection_state", b"_selection_state", "alt", b"alt", "arrow_data", b"arrow_data", "button_click_widgets", b"button_click_widgets", "column_order", b"column_order", "columns", b"columns", "disabled", b"disabled", "editing_mode", b"editing_mode", "form_id", b"form_id", "id", b"id", "lazy_data", b"lazy_data", "placeholder", b"placeholder", "row_height", b"row_height", "selection_default", b"selection_default", "selection_mode", b"selection_mode", "selection_state", b"selection_state"]  # noqa: Y015
+    _ClearFieldArgType: _TypeAlias = _typing.Literal["_alt", b"_alt", "_lazy_data", b"_lazy_data", "_placeholder", b"_placeholder", "_row_height", b"_row_height", "_selection_default", b"_selection_default", "_selection_state", b"_selection_state", "alt", b"alt", "arrow_data", b"arrow_data", "button_click_widgets", b"button_click_widgets", "column_order", b"column_order", "columns", b"columns", "disabled", b"disabled", "editing_mode", b"editing_mode", "form_id", b"form_id", "id", b"id", "ignore_rerun", b"ignore_rerun", "lazy_data", b"lazy_data", "placeholder", b"placeholder", "row_height", b"row_height", "selection_default", b"selection_default", "selection_mode", b"selection_mode", "selection_state", b"selection_state"]  # noqa: Y015
     def ClearField(self, field_name: _ClearFieldArgType) -> None: ...
     _WhichOneofReturnType__alt: _TypeAlias = _typing.Literal["alt"]  # noqa: Y015
     _WhichOneofArgType__alt: _TypeAlias = _typing.Literal["_alt", b"_alt"]  # noqa: Y015
