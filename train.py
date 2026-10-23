@@ -7,8 +7,9 @@ import joblib
 df = pd.read_csv('data/Pokemon.csv')
 
 df['Type 2'] = df['Type 2'].fillna('None')
+df['Generation'] = df['Generation'].astype(str)
 features = ['HP', 'Attack', 'Defense', 'Sp. Atk', 'Sp. Def', 'Speed']
-type_dummies = pd.get_dummies(df[['Type 1', 'Type 2']])
+type_dummies = pd.get_dummies(df[['Type 1', 'Type 2', 'Generation']])
 
 X = pd.concat([df[features], type_dummies], axis=1)
 
@@ -23,7 +24,7 @@ joblib.dump({
     'model': model,
     'scaler': scaler,
     'features': X.columns,
-    'df': df[['Name', 'Type 1', 'Type 2'] + features]
+    'df': df[['Name', 'Type 1', 'Type 2', 'Generation'] + features]
 }, 'pokemon_model.pkl')
 print("WE done! Modellen er lagra som 'pokemon_model.pkl")
 

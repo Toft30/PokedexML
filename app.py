@@ -33,6 +33,9 @@ with col_t1:
 with col_t2:
     valgt_t2 = st.selectbox("Sekundærtype (Type 2 - valfritt):", ["None"] + types)
 
+generasjoner = sorted(df['Generation'].astype(str).unique())
+valgt_gen = st.selectbox("Generasjon: ", generasjoner)
+
 st.subheader("Stats")
 col1, col2 = st.columns(2)
 with col1:
@@ -46,7 +49,7 @@ with col2:
 
 st.write("")
 
-if st.button("🔍 Finn Pokémon", type="primary", use_container_width=True):
+if st.button("Finn Pokémon", type="primary", use_container_width=True):
     input_row = {col: 0.0 for col in features}
     
     input_row['HP'] = hp
@@ -63,6 +66,10 @@ if st.button("🔍 Finn Pokémon", type="primary", use_container_width=True):
     t2_col = f"Type 2_{valgt_t2}"
     if t2_col in input_row:
         input_row[t2_col] = 1.0
+
+    gen_col = f"Generation_{valgt_gen}"
+    if gen_col in input_row:
+        input_row[gen_col] = 1.0
 
     input_df = pd.DataFrame([input_row])
     input_scaled = scaler.transform(input_df)
