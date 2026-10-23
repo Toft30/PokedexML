@@ -4,6 +4,7 @@ import concurrent.futures
 import contextlib
 import logging
 import random
+import selectors
 import socket
 import struct
 import threading
@@ -23,7 +24,7 @@ from ..exceptions import (
 )
 from ..frames import DATA_OPCODES, PONG, CloseCode, Frame
 from ..http11 import Request, Response
-from ..protocol import CLOSED, CONNECTING, OPEN, Event, Protocol, State
+from ..protocol import CLOSED, OPEN, Event, Protocol, State
 from ..typing import BytesLike, Data, DataLike, LoggerLike, Subprotocol
 from .messages import Assembler
 from .utils import Deadline
@@ -128,6 +129,9 @@ class Connection:
         # Exception raised while reading from the connection, to be chained to
         # ConnectionClosed in order to show why the TCP connection dropped.
         self.recv_exc: BaseException | None = None
+
+        # Notification to wake up recv_events() when the connection is closed.
+        self.shutdown_watcher, self.shutdown_notifier = socket.socketpair()
 
         # Receiving events from the socket. This thread is marked as daemon to
         # allow creating a connection in a non-daemon thread and using it in a
@@ -847,26 +851,33 @@ class Connection:
         ``recv_events()`` exits immediately when ``self.socket`` is closed.
 
         """
-        # When the opening handshake fails, we cannot trust rules in RFC 6455
-        # for closing TCP connections will be followed. The HTTP server could
-        # keep the connection alive after sending the response. We attempt to
-        # close the connection immediately. Unfortunately, this is unreliable
-        # on macOS; recv() may block until close_timeout elapses:
-        # https://github.com/python-websockets/websockets/issues/1596
-        # https://github.com/python/cpython/issues/154224
-        # In that case, break out of the loop to prevent recv() from blocking
-        # until close_timeout elapses.
-        close_expected_while_connecting = False
-
+        poller = selectors.DefaultSelector()
         try:
-            while not close_expected_while_connecting:
+            poller.register(self.shutdown_watcher, selectors.EVENT_READ)
+            try:
+                poller.register(self.socket, selectors.EVENT_READ, data="socket")
+            except (OSError, ValueError):
+                # close_socket() ran before poller.register().
+                # * OSError: [Errno 9] Bad file descriptor
+                #   (only seen on free-threaded Python for poller.register())
+                # * ValueError: Invalid file descriptor: -1
+                return
+
+            while True:
                 try:
                     # If the assembler buffer is full, block until it drains.
                     with self.recv_flow_control:
                         pass
-                    if self.close_deadline is not None:
-                        self.socket.settimeout(self.close_deadline.timeout())
-                    data = self.socket.recv(self.recv_bufsize)
+                    # Wait for the socket to be ready for reading.
+                    for key, _ in poller.select():
+                        if key.data == "socket":
+                            data = self.socket.recv(self.recv_bufsize)
+                            break
+                    else:
+                        # If the socket wasn't ready for reading, then it's
+                        # shutdown_watcher that was notified, meaning we're
+                        # closing the socket.
+                        break
                 except Exception as exc:
                     if self.debug:
                         self.logger.debug(
@@ -874,7 +885,7 @@ class Connection:
                             exc_info=True,
                         )
                     # When the closing handshake is initiated by our side,
-                    # recv() may block until send_context() closes the socket.
+                    # select() may block until send_context() closes the socket.
                     # In that case, send_context() already set recv_exc.
                     # Calling set_recv_exc() avoids overwriting it.
                     with self.protocol_mutex:
@@ -903,7 +914,7 @@ class Connection:
                             )
                         # Similarly to the above, avoid overriding an exception
                         # set by send_context(), in case of a race condition
-                        # i.e. send_context() closes the socket after recv()
+                        # i.e. send_context() closes the socket after select()
                         # returns above but before send_data() calls send().
                         self.set_recv_exc(exc)
                         break
@@ -912,8 +923,6 @@ class Connection:
                     if self.protocol.close_expected():
                         if self.close_deadline is None:
                             self.close_deadline = Deadline(self.close_timeout)
-                        if self.protocol.state is CONNECTING:
-                            close_expected_while_connecting = True
 
                 # Unlock conn_mutex before processing events. Else, the
                 # application can't send messages in response to events.
@@ -926,8 +935,8 @@ class Connection:
                     # This isn't expected to raise an exception.
                     self.process_event(event)
 
-            # Breaking out of the while not close_expected_while_connecting: ...
-            # loop means that we believe that the socket doesn't work anymore.
+            # Breaking out of the while True: ... loop means that we believe
+            # that the socket doesn't work anymore.
 
             with self.protocol_mutex:
                 # Feed the end of the data stream to the protocol.
@@ -957,6 +966,8 @@ class Connection:
         finally:
             # This isn't expected to raise an exception.
             self.close_socket()
+            poller.close()
+            self.shutdown_watcher.close()
 
     @contextlib.contextmanager
     def send_context(
@@ -1103,14 +1114,21 @@ class Connection:
         Shutdown and close socket. Close message assembler.
 
         Calling close_socket() guarantees that recv_events() terminates. Indeed,
-        recv_events() may block only on socket.recv() or on recv_messages.put().
+        recv_events() may block only on poller.select() or recv_messages.put().
 
         """
-        # shutdown() is required to interrupt recv() on Linux.
         try:
-            self.socket.shutdown(socket.SHUT_RDWR)
-        except OSError:  # socket already closed
+            self.shutdown_notifier.send(b"x")
+        except OSError:  # close_socket() was already called
             pass
+
+        try:
+            self.shutdown_notifier.close()
+        except OSError:  # socket already closed  # pragma: no cover
+            # OSError: [Errno 9] Bad file descriptor
+            # (only observed on free-threaded Python)
+            pass
+
         try:
             self.socket.close()
         except OSError:  # socket already closed  # pragma: no cover

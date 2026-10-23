@@ -20,12 +20,12 @@ st.write("Predict a Pokémon's primary type using its stats.")
 
 st.subheader("Pokémon stats")
 
-hp = st.slider("HP", 1, 255, 60)
-attack = st.slider("Attack", 1, 255, 70)
-defense = st.slider("Defense", 1, 255, 60)
-sp_atk = st.slider("Special Attack", 1, 255, 65)
-sp_def = st.slider("Special Defense", 1, 255, 65)
-speed = st.slider("Speed", 1, 255, 60)
+hp = st.number_input("HP", 1, 255, 60)
+attack = st.number_input("Attack", 1, 255, 70)
+defense = st.number_input("Defense", 1, 255, 60)
+sp_atk = st.number_input("Special Attack", 1, 255, 65)
+sp_def = st.number_input("Special Defense", 1, 255, 65)
+speed = st.number_input("Speed", 1, 255, 60)
 
 if st.button("Predict Pokémon Type", type="primary"):
     pokemon = pd.DataFrame([{
