@@ -8,7 +8,7 @@ df = pd.read_csv('data/Pokemon.csv')
 
 df['Type 2'] = df['Type 2'].fillna('None')
 features = ['HP', 'Attack', 'Defense', 'Sp. Atk', 'Sp. Def', 'Speed']
-type_dummies = pd.get_dummies(df['Type 1', 'Type 2'])
+type_dummies = pd.get_dummies(df[['Type 1', 'Type 2']])
 
 X = pd.concat([df[features], type_dummies], axis=1)
 
