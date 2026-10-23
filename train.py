@@ -1,32 +1,30 @@
 import pandas as pd
-from sklearn.model_selection import train_test_split
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import accuracy_score, classification_report
+from sklearn.neighbors import NearestNeighbors
+from sklearn.preprocessing import StandardScaler
 import joblib
 
 #laste inn data 
 df = pd.read_csv('data/Pokemon.csv')
 
-#velge ein stat og kva du vil predikere(type 1)
+df['Type 2'] = df['Type 2'].fillna('None')
 features = ['HP', 'Attack', 'Defense', 'Sp. Atk', 'Sp. Def', 'Speed']
-X = df[features]
-Y = df['Type 1']
+type_dummies = pd.get_dummies(df['Type 1', 'Type 2'])
 
-#Splitt i trennings og testsett
-X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2, random_state=42)
+X = pd.concat([df[features], type_dummies], axis=1)
 
-#faktisk trene modellen
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)
+
 print("Trener modellen...")
-model = RandomForestClassifier(n_estimators=100, random_state=42)
-model.fit(X_train, Y_train)
+model = NearestNeighbors(n_neighbors=3, metric = 'euclidean')
+model.fit(X_scaled)
 
-#evaluere modellen
-y_pred = model.predict(X_test)
-print(f"Accuracy: {accuracy_score(Y_test, y_pred):.2f}")
-print("\nKlassifiseringsrapport")
-print(classification_report(Y_test, y_pred))
-
-joblib.dump(model, 'pokemon_model.pkl')
+joblib.dump({
+    'model': model,
+    'scaler': scaler,
+    'features': X.columns,
+    'df': df[['Name', 'Type 1', 'Type 2'] + features]
+}, 'pokemon_model.pkl')
 print("WE done! Modellen er lagra som 'pokemon_model.pkl")
 
 
