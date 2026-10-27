@@ -5,7 +5,7 @@ import pandas as pd
 import joblib
 
 st.set_page_config(
-    page_title="Pokédex AI",
+    page_title="PokédPredict",
     page_icon="⚡",
     layout="centered"
 )
@@ -20,7 +20,7 @@ scaler = data['scaler']
 features = data['features']
 df = data['df']
 
-st.title("⚡ Pokédex AI")
+st.title("⚡ PokéPredict")
 st.write("Skriv inn type og stats, så tipper modellen vår kven det er!")
 st.divider()
 
