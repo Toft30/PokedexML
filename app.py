@@ -5,7 +5,7 @@ import pandas as pd
 import joblib
 
 st.set_page_config(
-    page_title="PokédPredict",
+    page_title="PokéPredict",
     page_icon="⚡",
     layout="centered"
 )
